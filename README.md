@@ -438,6 +438,7 @@ Esses resultados demonstram que a arquitetura proposta cumpre seus objetivos de 
 </p>
 
 
+
 <h2 id="referencias">Referências</h2>
 
   * PATTERSON, D. A.; HENNESSY, J. L. Computer organization and design : the hardware/software interface, ARM edition / Computer organization and design : the hardware/software interface, ARM edition.<br>
