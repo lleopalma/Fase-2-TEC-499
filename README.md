@@ -345,12 +345,12 @@ Essa camada abstrai detalhes de mapeamento de memória e comunicação, oferecen
   </thead>
   <tbody>
     <tr>
-      <td><strong>iniciarAPI()</strong></td>
+      <td><strong>iniciaBib()</strong></td>
       <td>Abre o dispositivo <code>/dev/mem</code> e realiza o mapeamento da região de memória correspondente à FPGA através do barramento <em>Lightweight</em>. 
       Essa função inicializa os ponteiros de acesso e valida a comunicação entre o HPS e o hardware.</td>
     </tr>
     <tr>
-      <td><strong>encerrarAPI()</strong></td>
+      <td><strong>encerrarBib()</strong></td>
       <td>Libera os recursos utilizados pela API, encerrando o mapeamento de memória e fechando o descritor de arquivo. 
       Garante a finalização limpa e evita vazamentos de recurso no sistema embarcado.</td>
     </tr>
