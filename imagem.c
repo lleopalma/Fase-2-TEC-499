@@ -6,6 +6,9 @@
 #include "./hps_0.h"
 #include <stdlib.h>
 #include <stdint.h>
+#include <linux/input.h>
+#include <unistd.h>
+#include <fcntl.h> 
 
 extern int iniciarBib();
 extern int encerrarBib();
@@ -157,6 +160,8 @@ int enviar_imagem_bmp(const char *filename) {
 int main() {
     int opcao;
     char filename[256];
+    struct input_event ev;
+    int fd;
     
     printf("\nINICIANDO API\n");
     if (iniciarBib() != 0) 
@@ -165,18 +170,20 @@ int main() {
         return 1;
     }
     printf("API em FUNCIONAMENTO!\n\n");
+
+    fd = open("/dev/input/event0", O_RDONLY);
+    if (fd == -1) {
+        perror("Erro ao abrir mouse");
+        return 1;
+    }
     
     int continuar = 1;
     Reset();
     do {
         printf("\n--- MENU DE TESTES ---\n");
         printf("1. Enviar imagem BMP\n");
-        printf("2. Vizinho Proximo\n");
-        printf("3. Replicacao\n");
-        printf("4. Decimacao\n");
-        printf("5. Media Blocos\n");
-        printf("6. Reset\n");
-        printf("7. Sair\n");
+        printf("2. Zoom com o mouse\n");
+        printf("3. Sair\n");
         printf("Opcao: ");
         scanf("%d", &opcao);
         
@@ -188,29 +195,42 @@ int main() {
                 break;
                 
             case 2:
-                printf("\nExecutando Vizinho Proximo...");
-                Vizinho_Prox();
+                printf("\nDando zoom com mouse...");
+                int verification = 1;
+                int contadorcima = 0;
+                int contadorbaixo = 0;
+                while (verification) {
+                    read(fd, &ev, sizeof(struct input_event));
+
+                    if (ev.type == EV_KEY && ev.code == BTN_LEFT && ev.value == 1) {
+                        printf("\nBotão esquerdo pressionado. Saindo do zoom...\n");
+                        verification = 0;  // Sai do loop
+                        break;
+                    }
+                    
+                    if (ev.type == EV_REL && ev.code == REL_WHEEL) {
+                        if (ev.value > 0) {
+                            contadorcima++;
+                            if (contadorcima % 2 == 0){
+                                Vizinho_Prox();
+                            } else { 
+                                Replicacao();
+                            }
+                        } else if (ev.value < 0) {
+                            contadorbaixo++;
+                            if (contadorbaixo % 2 == 0){
+                                Media();
+                            } else { 
+                                Decimacao();
+                            }
+                        } 
+                    }
+                }
                 break;
             case 3:
-                printf("\nExecutando Replicacao...");
-                Replicacao();
-                break;
-            case 4:
-                printf("\nExecutando Decimacao...");
-                Decimacao();
-                break;
-            case 5:
-                printf("\nExecutando Media Blocos...");
-                Media();
-                break;
-            case 6:
-                printf("\nExecutando Reset...");
-                Reset();
-                break;
-            case 7:
-                printf("\nSaindo...\n");
+                printf("\nSaindo...");
                 continuar = 0;
-                break;     
+                break;  
             default:
                 printf("\nDigite uma opção válida!\n");
         }
